@@ -11,11 +11,11 @@ job_function <- function(search_page_link, attribute_selector) {
     Job_attr[i] <- html_b %>% 
       html_nodes(attribute_selector) %>%
       html_text()
-    Job_info <- data.frame(
-      index = 1:length(link),
-      Job_attr = Job_attr
-    )
-    View(Job_info)
   }
+  Job_info <- data.frame(
+    index = 1:length(link),
+    Job_attr = Job_attr
+  )
+  View(Job_info)
 }
-job_function("https://www.1111.com.tw/search/job?ks=%E8%A1%8C%E9%8A%B7%E5%AF%A6%E7%BF%92", "#job-detail-info > div:nth-child(3) > div.job-detail-panel-content > div > div > div.modal-area > span")
+job_function("https://www.1111.com.tw/search/job?ks=%E8%A1%8C%E9%8A%B7%E5%AF%A6%E7%BF%92", "#job-detail-info > div:nth-child(4) > div.job-detail-panel-content > dl > dd:nth-child(8) > span")
