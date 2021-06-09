@@ -52,9 +52,7 @@ job_function <- function(search_page_link, attribute_selector) {
   for (i in 1:length(link)) {
     remDr$navigate(link[i])
     pageHTML <- read_html(remDr$getPageSource()[[1]])
-    
-    someText <- pageHTML %>% html_nodes("#app > div.container.jb-container.pt-4.position-relative > div > div.col.main > div.dialog.container-fluid.bg-white.rounded.job-description.mb-4.pt-6.pb-6 > div.job-description-table.row > div:nth-child(9) > div.col.p-0.job-description-table__data > p") %>% html_text()
-    Job_attr[i] <- someText #str(someText)
+    Job_attr[i] <- pageHTML %>% html_nodes("#app > div.container.jb-container.pt-4.position-relative > div > div.col.main > div.dialog.container-fluid.bg-white.rounded.job-description.mb-4.pt-6.pb-6 > div.job-description-table.row > div:nth-child(9) > div.col.p-0.job-description-table__data > p") %>% html_text()
   }
   Job_info <- data.frame(
     index = 1:length(link),
