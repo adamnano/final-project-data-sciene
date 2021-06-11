@@ -31,8 +31,9 @@ library(httr)
 #binman::rm_platform("phantomjs")
 #wdman::selenium(retcommand = TRUE)
 
-rD <- rsDriver(verbose = FALSE, port = 8888L, browser = "firefox")
+rD <- rsDriver(verbose = FALSE, port = 8887L, browser = "firefox")
 remDr <- rD$client
+remDr$open()
 
 
 ## MAIN PROCEDURE
@@ -47,21 +48,43 @@ job_function <- function(search_page_link, attribute_selector) {
   for (x in 1:length(link)) {
     link[x] <- paste0("https:", link[x])
   }
-  Job_attr <- vector("character", length = length(link))
+  Job_attr1 <- vector("character", length = length(link))
+  Job_attr2 <- vector("character", length = length(link))
+  Job_attr3 <- vector("character", length = length(link))
+  Job_attr4 <- vector("character", length = length(link))
+  Job_attr5 <- vector("character", length = length(link))
+  Job_attr6 <- vector("character", length = length(link))
+  Job_attr7 <- vector("character", length = length(link))
+  Job_attr8 <- vector("character", length = length(link))
   
   for (i in 1:length(link)) {
     remDr$navigate(link[i])
     pageHTML <- read_html(remDr$getPageSource()[[1]])
-    Job_attr[i] <- pageHTML %>% html_nodes("#app > div.container.jb-container.pt-4.position-relative > div > div.col.main > div.dialog.container-fluid.bg-white.rounded.job-description.mb-4.pt-6.pb-6 > div.job-description-table.row > div:nth-child(9) > div.col.p-0.job-description-table__data > p") %>% html_text()
+    Job_attr1[i] <- pageHTML %>% html_nodes("div.job-requirement-table.row > div:nth-child(1) > div.col.p-0.job-requirement-table__data") %>% html_text()
+    Job_attr2[i] <- pageHTML %>% html_nodes("div.job-requirement-table.row > div:nth-child(2) > div.col.p-0.job-requirement-table__data > p") %>% html_text()
+    Job_attr3[i] <- pageHTML %>% html_nodes("div.job-requirement-table.row > div:nth-child(3) > div.col.p-0.job-requirement-table__data > p") %>% html_text()
+    Job_attr4[i] <- pageHTML %>% html_nodes("div.job-requirement-table.row > div:nth-child(4) > div.col.p-0.job-requirement-table__data > p") %>% html_text()
+    Job_attr5[i] <- pageHTML %>% html_nodes("div.job-requirement-table.row > div:nth-child(5) > div.col.p-0.job-requirement-table__data") %>% html_text()
+    Job_attr6[i] <- pageHTML %>% html_nodes("div.job-requirement-table.row > div:nth-child(6) > div.col.p-0.job-requirement-table__data > p") %>% html_text()
+    Job_attr7[i] <- pageHTML %>% html_nodes("div.job-requirement-table.row > div:nth-child(7) > div.col.p-0.job-requirement-table__data > p") %>% html_text()
+    #Job_attr8[i] <- pageHTML %>% html_nodes("div.job-requirement-table.row > div:nth-child(8) > div.col.p-0.job-requirement-table__data") %>% html_text()
+    print(Job_attr1[i])
   }
   Job_info <- data.frame(
     index = 1:length(link),
-    Job_attr = Job_attr
+    接受身份 = Job_attr1,
+    工作經歷 = Job_attr2,
+    學歷要求 = Job_attr3,
+    科系要求 = Job_attr4,
+    語文條件 = Job_attr5,
+    擅長工具 = Job_attr6,
+    工作技能 = Job_attr7
+    #其他條件 = Job_attr8
   )
   View(Job_info)
+  write.csv(Job_info,"Job_info.csv", row.names = FALSE)
 }
-job_function("https://www.104.com.tw/jobs/search/?ro=0&isnew=14&kwop=7&keyword=%E5%AF%A6%E7%BF%92%20intern&order=7&asc=0&sr=99&rostatus=1024&page=2&mode=s&jobsource=intern_hot", "#job-detail-info > div:nth-child(4) > div.job-detail-panel-content > dl > dd:nth-child(8) > span")
-
+job_function("https://www.104.com.tw/jobs/search/?ro=2&jobcat=2004000000&expansionType=area%2Cspec%2Ccom%2Cjob%2Cwf%2Cwktm&order=15&asc=0&rostatus=1024&page=7&mode=s&jobsource=student2020", "#job-detail-info > div:nth-child(4) > div.job-detail-panel-content > dl > dd:nth-child(8) > span")
 
 ## Scraping data examples
 
