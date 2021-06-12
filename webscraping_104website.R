@@ -82,9 +82,10 @@ job_function <- function(search_page_link, attribute_selector) {
     #其他條件 = Job_attr8
   )
   View(Job_info)
-  write.csv(Job_info,"Job_info.csv", row.names = FALSE)
+  write.csv(Job_info,"Job_info2.csv", row.names = FALSE)
 }
-job_function("https://www.104.com.tw/jobs/search/?ro=2&jobcat=2004000000&expansionType=area%2Cspec%2Ccom%2Cjob%2Cwf%2Cwktm&order=15&asc=0&rostatus=1024&page=7&mode=s&jobsource=student2020", "#job-detail-info > div:nth-child(4) > div.job-detail-panel-content > dl > dd:nth-child(8) > span")
+#job_function("https://www.104.com.tw/jobs/search/?ro=2&jobcat=2004000000&expansionType=area%2Cspec%2Ccom%2Cjob%2Cwf%2Cwktm&order=15&asc=0&rostatus=1024&page=7&mode=s&jobsource=student2020", "#job-detail-info > div:nth-child(4) > div.job-detail-panel-content > dl > dd:nth-child(8) > span")
+job_function("https://www.104.com.tw/jobs/search/?ro=2&jobcat=2001000000&expansionType=area%2Cspec%2Ccom%2Cjob%2Cwf%2Cwktm&order=11&asc=0&rostatus=1024&page=1&mode=s&jobsource=student2020", "#job-detail-info > div:nth-child(4) > div.job-detail-panel-content > dl > dd:nth-child(8) > span")
 
 ## Scraping data examples
 
