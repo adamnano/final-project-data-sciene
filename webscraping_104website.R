@@ -9,14 +9,14 @@ rD <- rsDriver(verbose = FALSE, port = 8887L, browser = "firefox")
 remDr <- rD$client
 remDr$open()
 
-numPages <- 7
+numPages <- 20
 
 source_links <- vector("character", length = numPages)
 for (i in 1:numPages){
-  source_links[i] <- paste0("https://www.104.com.tw/jobs/search/?ro=2&jobcat=2001000000&expansionType=area%2Cspec%2Ccom%2Cjob%2Cwf%2Cwktm&order=11&asc=0&rostatus=1024&page=",i,"&mode=s&jobsource=student2020")
+  source_links[i] <- paste0("https://www.104.com.tw/jobs/search/?ro=2&jobcat=2006000000&expansionType=area,spec,com,job,wf,wktm&order=11&asc=0&rostatus=1024&page=",i,"&mode=s&jobsource=student2020")
 }
 source_links
-
+ 
 link_list <- c()
 
 job_function <- function(search_page_link) {
@@ -64,7 +64,7 @@ job_function <- function(search_page_link) {
     #其他條件 = Job_attr8
   )
   View(Job_info)
-  write.csv(Job_info,"webpage1.csv", row.names = FALSE)
+  write.csv(Job_info,"webpage20.csv", row.names = FALSE)
 }
 job_function(source_links)
 
