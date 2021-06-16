@@ -1,9 +1,9 @@
 library(readr)
 library(dplyr)
-Job_info <- read_csv("./job_info.csv")
+##Jobs <- read_csv("./job_info.csv")
 
 # get job required majors
-get_required_majors <- function(no_specify = FALSE)
+get_required_majors <- function(Job_info, no_specify = FALSE)
 {
   Job_major <- Job_info %>% select(科系要求)
   if (no_specify == FALSE) Job_major <- Job_major %>% filter(科系要求 != "不拘")
@@ -16,7 +16,7 @@ get_required_majors <- function(no_specify = FALSE)
 }
   
 # get job required languages
-get_required_languages <- function(no_specify = FALSE)
+get_required_languages <- function(Job_info, no_specify = FALSE)
 {
   Job_language <- Job_info %>% select(語文條件)
   if (no_specify == FALSE) Job_language <- Job_language %>% filter(語文條件 != "不拘")
@@ -29,7 +29,7 @@ get_required_languages <- function(no_specify = FALSE)
   return(required_language)
 }
 
-get_required_skills <- function(no_specify = FALSE)
+get_required_skills <- function(Job_info, no_specify = FALSE)
 {
   Job_skill <- Job_info %>% select(工作技能) 
   if (no_specify == FALSE) Job_skill <- Job_skill %>% filter(工作技能 != "不拘")
@@ -42,7 +42,7 @@ get_required_skills <- function(no_specify = FALSE)
   return(required_skill)
 }
 
-get_required_tools <- function(no_specify = FALSE)
+get_required_tools <- function(Job_info, no_specify = FALSE)
 {
   Job_tool <- Job_info %>% select(擅長工具)
   if (no_specify == FALSE) Job_tool <- Job_tool %>% filter(擅長工具 != "不拘")
@@ -54,6 +54,16 @@ get_required_tools <- function(no_specify = FALSE)
   required_tool <- required_tool %>% unlist() %>% unname()
   return (required_tool)
 }
+
+get_least_degree <- function(Job_info, no_specify = TRUE)
+{
+  Job_degree <- Job_info %>% select(學歷要求)
+  if (no_specify == FALSE) Job_degree <- Job_degree %>% filter(學歷要求 != "不拘")
+  #required_degree <- vector("character", length = length(Job_degree))
+  required_degree <- sapply(Job_degree[[1]], function(x){return(strsplit(x, split = "、")[1])}) %>% sapply(function(x){return(x[1])}) %>% unlist() %>% unname()
+  return(required_degree)
+}
+
 
 # creating dataframe
 #new_df <- data.frame(
