@@ -1,49 +1,70 @@
 library(shiny)
 library(readr)
 library(dplyr)
+library("RColorBrewer") #wordcloud
+library("tm")
+library("wordcloud")
 
-
-
-Job_info1 <- read_csv("HR.csv")
-Job_info2 <- read_csv("文字_傳媒工作類.csv")
-Job_info3 <- read_csv("生產製造_品管_環衛類.csv")
-Job_info4 <- read_csv("行政_總務_法務類.csv")
-Job_info5 <- read_csv("行銷_企劃_專案管理類.csv")
-Job_info6 <- read_csv("客服_門市_業務_貿易類.csv")
-Job_info7 <- read_csv("研發相關類.csv")
-Job_info8 <- read_csv("軍警消_保全類.csv")
-Job_info9 <- read_csv("財會_金融專業類.csv")
-Job_info10 <- read_csv("傳播藝術_設計類.csv")
-Job_info11 <- read_csv("資材_物流_運輸類.csv")
-Job_info12 <- read_csv("資訊軟體系統類.csv")
-Job_info13 <- read_csv("學術_教育_輔導類.csv")
-Job_info14 <- read_csv("操作_技術_維修類.csv")
-Job_info15 <- read_csv("餐飲_旅遊_美容美髮類.csv")
-Job_info16 <- read_csv("營建_製圖類.csv")
-Job_info17 <- read_csv("醫療_保健服務類.csv")
+Job_info1 <- read_csv("csv files/HR.csv")
+Job_info2 <- read_csv("csv files/文字_傳媒工作類.csv")
+Job_info3 <- read_csv("csv files/生產製造_品管_環衛類.csv")
+Job_info4 <- read_csv("csv files/行政_總務_法務類.csv")
+Job_info5 <- read_csv("csv files/行銷_企劃_專案管理類.csv")
+Job_info6 <- read_csv("csv files/客服_門市_業務_貿易類.csv")
+Job_info7 <- read_csv("csv files/研發相關類.csv")
+Job_info8 <- read_csv("csv files/軍警消_保全類.csv")
+Job_info9 <- read_csv("csv files/財會_金融專業類.csv")
+Job_info10 <- read_csv("csv files/傳播藝術_設計類.csv")
+Job_info11 <- read_csv("csv files/資材_物流_運輸類.csv")
+Job_info12 <- read_csv("csv files/資訊軟體系統類.csv")
+Job_info13 <- read_csv("csv files/學術_教育_輔導類.csv")
+Job_info14 <- read_csv("csv files/操作_技術_維修類.csv")
+Job_info15 <- read_csv("csv files/餐飲_旅遊_美容美髮類.csv")
+Job_info16 <- read_csv("csv files/營建_製圖類.csv")
+Job_info17 <- read_csv("csv files/醫療_保健服務類.csv")
 Job <- list(Job_info1, Job_info2, Job_info3, Job_info4, Job_info5, Job_info6, Job_info7, Job_info8, 
             Job_info9, Job_info10, Job_info11, Job_info12, Job_info13, Job_info14, Job_info15, Job_info16, Job_info17)
 
 #define UI
 ui = fluidPage(
-  selectInput(inputId = "area",
-              label = "Choose area: ",
-              choices = c("經營_人資類" = 1, "文字_傳媒工作類" = 2, "生產製造_品管_環衛類" = 3, "行政_總務_法務類" = 4, "行銷_企劃_專案管理類" = 5, 
-                          "客服_門市_業務_貿易類" = 6, "研發相關類" = 7, "軍警消_保全類" = 8, "財會_金融專業類" = 9, "傳播藝術_設計類" = 10, 
-                          "資材_物流_運輸類" = 11, "資訊軟體系統類" = 12, "學術_教育_輔導類" = 13, "操作_技術_維修類" = 14, "餐飲_旅遊_美容美髮類" = 15, 
-                          "營建_製圖類" = 16, "醫療_保健服務類" = 17),
-              multiple = FALSE),
-  selectInput(inputId = "cloud",
-              label = "Compare: ",
-              choices = c("Skills" = 1, "Languages" = 2, "Majors" = 3, "Tools" = 4),
-              multiple = FALSE),
-  plotOutput(outputId = "hist")
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(inputId = "area",
+                  label = "Choose area: ",
+                  choices = c("經營_人資類" = 1, "文字_傳媒工作類" = 2, "生產製造_品管_環衛類" = 3, "行政_總務_法務類" = 4, "行銷_企劃_專案管理類" = 5, 
+                              "客服_門市_業務_貿易類" = 6, "研發相關類" = 7, "軍警消_保全類" = 8, "財會_金融專業類" = 9, "傳播藝術_設計類" = 10, 
+                              "資材_物流_運輸類" = 11, "資訊軟體系統類" = 12, "學術_教育_輔導類" = 13, "操作_技術_維修類" = 14, "餐飲_旅遊_美容美髮類" = 15, 
+                              "營建_製圖類" = 16, "醫療_保健服務類" = 17),
+                  multiple = FALSE),
+      selectInput(inputId = "cloud",
+                  label = "Compare: ",
+                  choices = c("Skills" = 1, "Languages" = 2, "Majors" = 3, "Tools" = 4),
+                  multiple = FALSE),
+    ),
+    mainPanel(
+      plotOutput(outputId = "wordcloud")
+    )
+    
+  )
+  
+  # selectInput(inputId = "area",
+  #             label = "Choose area: ",
+  #             choices = c("經營_人資類" = 1, "文字_傳媒工作類" = 2, "生產製造_品管_環衛類" = 3, "行政_總務_法務類" = 4, "行銷_企劃_專案管理類" = 5, 
+  #                         "客服_門市_業務_貿易類" = 6, "研發相關類" = 7, "軍警消_保全類" = 8, "財會_金融專業類" = 9, "傳播藝術_設計類" = 10, 
+  #                         "資材_物流_運輸類" = 11, "資訊軟體系統類" = 12, "學術_教育_輔導類" = 13, "操作_技術_維修類" = 14, "餐飲_旅遊_美容美髮類" = 15, 
+  #                         "營建_製圖類" = 16, "醫療_保健服務類" = 17),
+  #             multiple = FALSE),
+  # selectInput(inputId = "cloud",
+  #             label = "Compare: ",
+  #             choices = c("Skills" = 1, "Languages" = 2, "Majors" = 3, "Tools" = 4),
+  #             multiple = FALSE),
+  # plotOutput(outputId = "wordcloud")
 )
 
 
 #define server logic
 server = function(input, output){
-  output$hist <- renderPlot({
+  output$wordcloud <- renderPlot({
     file = Job[[as.integer(input$area)]]
     cloud = input$cloud
     
@@ -80,7 +101,6 @@ server = function(input, output){
     # 
     
     #English
-    library("dplyr")
     get_required_languages <- function(Job_language, no_specify = TRUE) #split all the languages
     { Job_language <- Job_language %>% select(語文條件)
     if (no_specify == FALSE) Job_language <- Job_language %>% filter(語文條件 != "不拘")
@@ -168,18 +188,10 @@ server = function(input, output){
     set.seed(1234)
     wordcloud(words = d$word, freq = d$freq, min.freq = 1,
               max.words=10, random.order=FALSE, rot.per=0.35,
-              colors=brewer.pal(8, "Dark2"), scale = c(3, 0.2))
+              colors=brewer.pal(8, "Dark2"), scale = c(6, 3))
     
-  })
+  }, width = 700, height = 700)
 }
-
-file <- read_csv("HR.csv")
-
-
-
-
-
-
 
 
 #run the application
