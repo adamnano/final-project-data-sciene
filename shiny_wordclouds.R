@@ -190,7 +190,7 @@ server = function(input, output){
               max.words=10, random.order=FALSE, rot.per=0.35,
               colors=brewer.pal(8, "Dark2"), scale = c(6, 3))
     
-  }, width = 700, height = 700)
+  }, width = 600, height = 800)
 }
 
 
