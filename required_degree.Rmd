@@ -12,8 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
 
-source("../vectorizing_strings.R")
-Jobs_list <- list.files(pattern = "*.csv")
+source("./vectorizing_strings.R")
+Jobs_list <- list.files(path = "./csv files", pattern = "*.csv", full.names = TRUE)
 Jobs <- lapply(Jobs_list, read.delim, header = TRUE, sep = ',')
 
 ```
@@ -25,21 +25,18 @@ Jobs <- lapply(Jobs_list, read.delim, header = TRUE, sep = ',')
 
 degree_level = c("不拘", "高中以下", "高中", "高中以上", "專科", "專科以上", "大學", "大學以上", "碩士", "碩士以上", "博士")
 
-Jobs %>% 
+J <- Jobs %>% 
   lapply(get_least_degree) %>% 
   lapply(function(x){
-    x[] <- 
-    return(tibble(degree = x) %>% 
+    #x[] <- 
+    return(data.frame(degree = x) %>% 
       count(degree) %>%
       mutate(total = sum(n)) %>%
       mutate(rate = n / total * 100) %>%
       arrange(factor(degree, levels = degree_level))
     )}) #%>%
   bind_rows()
-
-count(語言) %>%
-      mutate(total = sum(n)) %>%
-      mutate(rate = n / total * 100) %>%
-      filter(語言 == "英文")
+J[[1]]$degree[6]
+J
 
 ```
