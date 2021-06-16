@@ -47,18 +47,6 @@ ui = fluidPage(
     
   )
   
-  # selectInput(inputId = "area",
-  #             label = "Choose area: ",
-  #             choices = c("經營_人資類" = 1, "文字_傳媒工作類" = 2, "生產製造_品管_環衛類" = 3, "行政_總務_法務類" = 4, "行銷_企劃_專案管理類" = 5, 
-  #                         "客服_門市_業務_貿易類" = 6, "研發相關類" = 7, "軍警消_保全類" = 8, "財會_金融專業類" = 9, "傳播藝術_設計類" = 10, 
-  #                         "資材_物流_運輸類" = 11, "資訊軟體系統類" = 12, "學術_教育_輔導類" = 13, "操作_技術_維修類" = 14, "餐飲_旅遊_美容美髮類" = 15, 
-  #                         "營建_製圖類" = 16, "醫療_保健服務類" = 17),
-  #             multiple = FALSE),
-  # selectInput(inputId = "cloud",
-  #             label = "Compare: ",
-  #             choices = c("Skills" = 1, "Languages" = 2, "Majors" = 3, "Tools" = 4),
-  #             multiple = FALSE),
-  # plotOutput(outputId = "wordcloud")
 )
 
 
@@ -67,38 +55,6 @@ server = function(input, output){
   output$wordcloud <- renderPlot({
     file = Job[[as.integer(input$area)]]
     cloud = input$cloud
-    
-    
-    # #major#2
-    # get_required_majors <- function(Job_major, no_specify = FALSE)
-    # {
-    #   Job_major <- Job_major %>% select(科系要求)
-    #   if (no_specify == FALSE) Job_major <- Job_major %>% filter(科系要求 != "不拘")
-    #   required_major <- vector("character", length = length(Job_major))
-    #   for (i in 1:length(Job_major[[1]])) {
-    #     required_major <- c(required_major, strsplit(Job_major[[1]][i], split = "、"))
-    #   }
-    #   required_major <- required_major %>% unlist() %>% unname()
-    #   return(required_major)
-    # }
-    # total_major_list <- sapply(Job, get_required_majors) #list of all the majors
-    # 
-    # library("RColorBrewer") #wordcloud
-    # library("tm")
-    # library("wordcloud")
-    # #17 word clouds of majors from 17 industries respectively
-    # docs <- Corpus(VectorSource(total_major_list[[as.integer(input$num)]]))
-    # inspect(docs)
-    # dtm <- TermDocumentMatrix(docs)
-    # m <- as.matrix(dtm)
-    # v <- sort(rowSums(m),decreasing=TRUE)
-    # d <- data.frame(word = names(v),freq=v)
-    # head(d, 10)
-    # set.seed(1234)
-    # wordcloud(words = d$word, freq = d$freq, min.freq = 1,
-    #           max.words=200, random.order=FALSE, rot.per=0.35, 
-    #           colors=brewer.pal(8, "Dark2"))
-    # 
     
     #English
     get_required_languages <- function(Job_language, no_specify = TRUE) #split all the languages
