@@ -95,6 +95,8 @@ df
 library(ggrepel)
 all_plt <- df %>% ggplot() +
   geom_bar(mapping = aes(reorder(x = catagory, -rate), y = rate), stat = "identity") +
-  theme(text = element_text(family = font), axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(text = element_text(family = font), axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("職業類別") +
+  ylab("需要大學以上學歷比例")
 all_plt
 ```
