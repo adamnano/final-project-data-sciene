@@ -19,24 +19,50 @@ Jobs <- lapply(Jobs_list, read.delim, header = TRUE, sep = ',')
 ```
 
 
-## Print tables about least required degree
+## Get the tables about least required degree is whether under university or not
 
 ```{r}
 
-degree_level = c("不拘", "高中以下", "高中", "高中以上", "專科", "專科以上", "大學", "大學以上", "碩士", "碩士以上", "博士")
+degree_level <- c("不拘", "高中以下", "高中", "高中以上", "專科", "專科以上", "大學", "大學以上", "碩士", "碩士以上", "博士")
+above_uni <- c("大學", "大學以上", "碩士", "碩士以上", "博士")
 
 J <- Jobs %>% 
   lapply(get_least_degree) %>% 
   lapply(function(x){
-    #x[] <- 
     return(data.frame(degree = x) %>% 
       count(degree) %>%
       mutate(total = sum(n)) %>%
       mutate(rate = n / total * 100) %>%
       arrange(factor(degree, levels = degree_level))
-    )}) #%>%
-  bind_rows()
-J[[1]]$degree[6]
+    )}) %>%
+  lapply(function(x){
+    x$degree <- x$degree %>% sapply(function(x){
+      return(if (x %in% above_uni) "大學以上" else "大學以下")
+    }) %>%
+    unname()
+    return(x)
+  }) %>% # if need all degrees, comment the lapply below(care for the parentheses)
+  lapply(function(x){
+    return(x %>%
+    group_by(degree) %>%
+    summarise(n = sum(n), rate = n / total * 100) %>%
+    ungroup() %>%
+    unique()
+  )})
+
 J
+
+```
+
+## Print out the graph
+
+```{r}
+
+plts <- J %>% lapply(function(x){
+  return(x %>% ggplot() +
+  geom_bar(mapping = aes(x = degree, y = rate), stat = "identity") +
+  theme(text = element_text(family = "Noto Sans CJK TC"))
+  )})
+plts
 
 ```
