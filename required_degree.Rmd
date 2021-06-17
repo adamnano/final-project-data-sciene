@@ -58,10 +58,12 @@ J
 
 ```{r}
 
+font <- "Noto Sans CJK TC"  # if you don't have the font in your computer, you can replace it with any mandarin font in your computer, p.s. the font is HIGHLY RECOMMENDED to have!
+
 plts <- J %>% lapply(function(x){
   return(x %>% ggplot() +
   geom_bar(mapping = aes(x = degree, y = rate), stat = "identity") +
-  theme(text = element_text(family = "Noto Sans CJK TC"))
+  theme(text = element_text(family = font)) # fix mandarin display issue
   )})
 plts
 
