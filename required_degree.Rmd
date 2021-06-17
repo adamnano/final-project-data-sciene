@@ -25,6 +25,7 @@ Jobs <- lapply(Jobs_list, read.delim, header = TRUE, sep = ',')
 
 degree_level <- c("不拘", "高中以下", "高中", "高中以上", "專科", "專科以上", "大學", "大學以上", "碩士", "碩士以上", "博士")
 above_uni <- c("大學", "大學以上", "碩士", "碩士以上", "博士")
+regex <- ".*/(.*)\\.csv"
 
 J <- Jobs %>% 
   lapply(get_least_degree) %>% 
@@ -50,6 +51,11 @@ J <- Jobs %>%
     unique()
   )})
 
+for (i in 1:length(J))
+{
+  J[[i]] <- J[[i]] %>% mutate(catagory = gsub(regex, '\\1', Jobs_list[i]))
+}
+
 J
 
 ```
@@ -67,4 +73,28 @@ plts <- J %>% lapply(function(x){
   )})
 plts
 
+```
+
+
+## All catagories in a plot
+
+```{r}
+df <- data.frame()
+for (i in 1:length(J))
+{
+  df <- rbind(df, J[[i]] %>% filter(degree == "大學以上"))
+}
+df <- df %>% arrange(desc(rate))
+df
+```
+
+
+## Plotting all catagories
+
+```{r}
+library(ggrepel)
+all_plt <- df %>% ggplot() +
+  geom_bar(mapping = aes(reorder(x = catagory, -rate), y = rate), stat = "identity") +
+  theme(text = element_text(family = font), axis.text.x = element_text(angle = 45, hjust = 1))
+all_plt
 ```
