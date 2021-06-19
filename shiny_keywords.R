@@ -24,7 +24,7 @@ Job_content14 <- read_csv("工作內容csv/操作_技術_維修類content.csv")
 Job_content15 <- read_csv("工作內容csv/餐飲_旅遊_美容美髮類content.csv")
 Job_content16 <- read_csv("工作內容csv/營建_製圖類content.csv")
 Job_content17 <- read_csv("工作內容csv/醫療_保健服務類content.csv")
-Job <- list(Job_content1, Job_content2, Job_content3, Job_content4, Job_content5, Job_content6, Job_content7, Job_content8, 
+Job_content_list <- list(Job_content1, Job_content2, Job_content3, Job_content4, Job_content5, Job_content6, Job_content7, Job_content8, 
             Job_content9, Job_content10, Job_content11, Job_content12, Job_content13, Job_content14, Job_content15, Job_content16, Job_content17)
 titles <- c("經營_人資類", "文字_傳媒工作類", "生產製造_品管_環衛類", "行政_總務_法務類", "行銷_企劃_專案管理類", 
            "客服_門市_業務_貿易類", "研發相關類", "軍警消_保全類", "財會_金融專業類", "傳播藝術_設計類", 
@@ -34,7 +34,7 @@ titles <- c("經營_人資類", "文字_傳媒工作類", "生產製造_品管_�
 ui = fluidPage(
   sidebarLayout(
     sidebarPanel(
-      selectInput(inputId = "area",
+      selectInput(inputId = "area2",
                   label = "Choose area: ",
                   choices = c("經營_人資類" = 1, "文字_傳媒工作類" = 2, "生產製造_品管_環衛類" = 3, "行政_總務_法務類" = 4, "行銷_企劃_專案管理類" = 5, 
                               "客服_門市_業務_貿易類" = 6, "研發相關類" = 7, "軍警消_保全類" = 8, "財會_金融專業類" = 9, "傳播藝術_設計類" = 10, 
@@ -58,7 +58,7 @@ ui = fluidPage(
 #define server logic
 server = function(input, output){
   output$graph <- renderPlot({
-    file = Job[[as.integer(input$area)]]
+    file = Job_content_list[[as.integer(input$area2)]]
     #cloud = input$cloud
     
     job_content <- function(file) {
@@ -78,7 +78,7 @@ server = function(input, output){
       )
       ggplot(data = result) +
         geom_bar(mapping = aes(reorder(x = 關鍵字, -出現次數), y = 出現次數), stat = "identity") +
-        labs(title = titles[[as.integer(input$area)]],
+        labs(title = titles[[as.integer(input$area2)]],
              x = "關鍵字") +
         theme(axis.text.x = element_text(angle = 45, hjust = 1))
     }
