@@ -1,9 +1,16 @@
 library(shiny)
 library(readr)
 library(dplyr)
+library(ggplot2)
 library("RColorBrewer") #wordcloud
 library("tm")
 library("wordcloud")
+library(tidyverse)
+library(ggrepel)
+source("./vectorizing_strings.R")
+
+Jobs_list <- list.files(path = "./csv files", pattern = "*.csv", full.names = TRUE)
+Jobs <- lapply(Jobs_list, read.delim, header = TRUE, sep = ',')
 
 Job_info1 <- read_csv("csv files/HR.csv")
 Job_info2 <- read_csv("csv files/文字_傳媒工作類.csv")
@@ -90,9 +97,25 @@ ui = fluidPage(
                )
                
              )
+             ),
+    tabPanel("長條圖",
+             sidebarLayout(
+               sidebarPanel(
+                 selectInput(inputId = "area3",
+                             label = "Choose area: ",
+                             choices = c("所有領域"),
+                             multiple = FALSE),
+                 selectInput(inputId = "cloud3",
+                             label = "Compare: ",
+                             choices = c("英文能力" = 1, "學歷背景" = 2, "科系背景" = 3),
+                             multiple = FALSE),
+               ),
+             mainPanel(
+               plotOutput(outputId = "final")
+             )
              )
   )
-)
+))
 
 
 #define server logic
@@ -224,6 +247,121 @@ server = function(input, output){
     
     job_content(file)
     
+    
+  })
+  
+  ###############################
+  output$final <- renderPlot({
+    #file = Job_content_list[[as.integer(input$area2)]]
+    #English
+    cloud3 = input$cloud3
+    if (cloud3 == 1){
+      get_required_languages <- function(Job_language, no_specify = TRUE) #split all the languages
+      { Job_language <- Job_language %>% select(語文條件)
+      if (no_specify == FALSE) Job_language <- Job_language %>% filter(語文條件 != "不拘")
+      required_language <- vector("character", length = length(Job_language))
+      for (i in 1:length(Job_language[[1]]))
+      {
+        required_language <- c(required_language, sapply(strsplit(Job_language[[1]][i], split = "  ")[[1]], function(x) return(strsplit(x, split = " -- ")[[1]][1])))
+      }
+      required_language <- required_language %>% unlist() %>% unname()
+      return(required_language)
+      }
+      languages_vecs <- sapply(Job, get_required_languages)
+      
+      English_rates <- vector(mode = "list", length = 17)
+      for(i in 1:length(languages_vecs)){
+        total_language_vec <- languages_vecs[[i]] #a vec of all the languages and 不拘
+        language_tb <- tibble(語言 = total_language_vec) #build a tibble
+        English_rate <- language_tb %>%
+          filter(語言 %in% c("不拘", "英文")) %>%
+          count(語言) %>%
+          mutate(total = sum(n)) %>%
+          mutate(rate = n / total * 100) %>%
+          filter(語言 == "英文") #rate of jobs that required English
+        English_rates[[i]] <- English_rate
+      }
+      English_rates <- bind_rows(English_rates)
+      English_rates <- English_rates %>%
+        mutate(領域 = titles) %>%
+        arrange(desc(rate))
+      
+      ggplot(English_rates, aes(reorder(x = 領域, -rate), y = rate)) +
+        geom_bar(stat = "identity") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(title = "各領域需要英文能力的職缺比例",
+             x = "領域",
+             y = "比例")
+    } else if(cloud3 == 2){
+      
+      
+      degree_level <- c("不拘", "高中以下", "高中", "高中以上", "專科", "專科以上", "大學", "大學以上", "碩士", "碩士以上", "博士")
+      above_uni <- c("大學", "大學以上", "碩士", "碩士以上", "博士")
+      regex <- ".*/(.*)\\.csv"
+      J <- Jobs %>% 
+        lapply(get_least_degree) %>% 
+        lapply(function(x){
+          return(data.frame(degree = x) %>% 
+                   count(degree) %>%
+                   mutate(total = sum(n)) %>%
+                   mutate(rate = n / total * 100) %>%
+                   arrange(factor(degree, levels = degree_level))
+          )}) %>%
+        lapply(function(x){
+          x$degree <- x$degree %>% sapply(function(x){
+            return(if (x %in% above_uni) "大學以上" else "大學以下")
+          }) %>%
+            unname()
+          return(x)
+        }) %>% # if need all degrees, comment the lapply below(care for the parentheses)
+        lapply(function(x){
+          return(x %>%
+                   group_by(degree) %>%
+                   summarise(n = sum(n), rate = n / total * 100) %>%
+                   ungroup() %>%
+                   unique()
+          )})
+      for (i in 1:length(J))
+      {
+        J[[i]] <- J[[i]] %>% mutate(catagory = gsub(regex, '\\1', Jobs_list[i]))
+      }
+      J
+      
+      ## All catagories in a plot
+      
+      df <- data.frame()
+      for (i in 1:length(J))
+      {
+        df <- rbind(df, J[[i]] %>% filter(degree == "大學以上"))
+      }
+      df <- df %>% arrange(desc(rate))
+      df
+      
+      
+      ## Plotting all catagories
+      
+      all_plt <- df %>% ggplot() +
+        geom_bar(mapping = aes(reorder(x = catagory, -rate), y = rate), stat = "identity") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        xlab("職業類別") +
+        ylab("需要大學以上學歷比例")
+      all_plt
+      
+    }else if(cloud3 == 3){
+      Major_required <- function(Job_info) {
+        Major_requirement <- Job_info %>%
+          select(科系要求)
+        return(mean(Major_requirement[[1]] != "不拘"))
+      }
+      Major_required_rate <- sapply(Job, Major_required) #rate of jobs that required certain majors
+      Major_rates <- tibble(rate = Major_required_rate * 100, 領域 = titles)
+      ggplot(Major_rates, aes(reorder(x = 領域, -rate), y = rate)) +
+        geom_bar(stat = "identity") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(title = "各領域需要特定科系的職缺比例",
+             x = "領域", 
+             y = "比例")
+    }
     
   })
 }
